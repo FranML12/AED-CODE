@@ -20,6 +20,7 @@ num1 = int(input("Ingrese el primer número: "))
 num2 = int(input("Ingrese el segundo número: "))
 num3 = int(input("Ingrese el tercer número: "))
 
+# Tengo entendido que esta ficha no incluye "in" pero para evitar lios, lo dejo
 if num1 not in tarjeta and num2 not in tarjeta and num3 not in tarjeta:
     print("El jugador tiene mala suerte, no marco ninguna casilla")
 else:
