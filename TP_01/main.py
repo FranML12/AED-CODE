@@ -3,9 +3,24 @@ direccion = input("Dirección del lugar de destino: ")
 tipo = int(input("Tipo de envío (id entre 0 y 6 - ver tabla 2 en el enunciado): "))
 pago = int(input("Forma de pago (1: efectivo - 2: tarjeta): "))
 
-# 8 caracteres. La primera letra identifica a la provincia (las letras "I" y "O" no se utilizan), los cuatro dígitos a la ciudad, y las tres letras finales al frente de manzana o paraje o casilla de correo.
-
-if len(cp) == 8:
+# Determinar el país y la provincia de destino
+if len(cp) == 4:
+    destino = 'Bolivia'
+    provincia = 'No aplica'
+elif len(cp) == 5:
+    if cp[0] == 1:
+        destino = 'Uruguay'
+        provincia = 'Montevideo'
+    else:
+        destino = 'Uruguay'
+        provincia = 'No aplica'
+elif len(cp) == 6:
+    destino = 'Paraguay'
+    provincia = 'No aplica'
+elif len(cp) == 7:
+    destino = 'Chile'
+    provincia = 'No aplica'
+elif len(cp) == 8:
     destino = 'Argentina'
     if cp[0] == 'A':
         provincia = 'Salta'
@@ -55,24 +70,11 @@ if len(cp) == 8:
         provincia = 'Jujuy'
     elif cp[0] == 'Z':
         provincia = 'Santa Cruz'
-elif len(cp) == 4:
-    destino = 'Bolivia'
-    provincia = 'No aplica'
+    else:
+        provincia = 'No aplica'
 elif len(cp) == 9:
     destino = 'Brasil'
     provincia = 'No aplica'
-elif len(cp) == 7:
-    destino = 'Chile'
-    provincia = 'No aplica'
-elif len(cp) == 6:
-    destino = 'Paraguay'
-    provincia = 'No aplica'
-elif len(cp) == 5 and cp[0] == 1:
-    destino = 'Uruguay'
-    provincia = 'Montevideo'
-    if len(cp) == 5 and cp[0] != 1:
-        destino = 'Uruguay'
-        provincia = 'No aplica'
 else:
     destino = 'Otro país'
     provincia = 'No aplica'
@@ -93,23 +95,23 @@ elif tipo == 5:
 elif tipo == 6:
     precio = 17900
 else:
+    precio = 0
     print("Tipo de envío inválido.")
 
-# fran fijate aca podemos poner en vez de destino = podemos poner len(cp) == 9 para ahorrar mas caracteres y optimizar el codigo
-if destino == 'Bolivia' or destino == 'Paraguay' or provincia == 'Montevideo' :
+# Calcular el precio inicial
+if destino == 'Bolivia' or destino == 'Paraguay' or provincia == 'Montevideo':
     inicial = (precio * 0.20) + precio
-elif destino == 'Chile' or len(cp) == 5 and cp[0] != 1:
+elif destino == 'Chile':
     inicial = (precio * 0.25) + precio
-elif destino == 'Brasil' and cp[0] == 8 or cp[0] == 9:
-    inicial = (precio * 0.20) + precio
-elif destino == 'Brasil' and cp[0] == 0 or cp[0] == 1 or cp[0] == 2 or cp[0] == 3:
-    inicial = (precio * 0.25) + precio
-elif destino == 'Brasil' and cp[0] == 4 or cp[0] == 5 or cp[0] == 6 or cp[0] == 7:
-    inicial = (precio * 0.25) + precio
+elif destino == 'Brasil':
+    if cp[0] == 8 or cp[0] == 9:
+        inicial = (precio * 0.20) + precio
+    else:
+        inicial = (precio * 0.25) + precio
 else:
     inicial = (precio * 0.5) + precio
 
-
+# Calcular el precio final
 if pago == 1:
     final = inicial - (inicial * 0.1)
 else:
@@ -119,6 +121,3 @@ print("País de destino del envío:", destino)
 print("Provincia destino:", provincia)
 print("Importe inicial a pagar:", int(inicial))
 print("Importe final a pagar:", int(final)) 
-
-# aca dice que hay que truncar el inicial y final pero math.trunc(x) no lo dieron creo
-
