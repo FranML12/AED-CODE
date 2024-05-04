@@ -8,7 +8,7 @@ if len(cp) == 4:
     destino = 'Bolivia'
     provincia = 'No aplica'
 elif len(cp) == 5:
-    if cp[0] == 1:
+    if cp[0] == '1':
         destino = 'Uruguay'
         provincia = 'Montevideo'
     else:
@@ -111,8 +111,10 @@ elif destino == 'Uruguay':
 elif destino == 'Chile':
     inicial = (precio * 0.25) + precio
 elif destino == 'Brasil':
-    if cp[0] == 8 or cp[0] == 9:
+    if cp[0] == '8' or cp[0] == '9':
         inicial = (precio * 0.20) + precio
+    elif cp[0] == '4' or cp[0] == '5' or cp[0] == '6' or cp[0] == '7':
+        inicial = (precio * 0.30) + precio
     else:
         inicial = (precio * 0.25) + precio
 else:
