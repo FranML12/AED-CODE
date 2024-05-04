@@ -99,8 +99,15 @@ else:
     print("Tipo de envío inválido.")
 
 # Calcular el precio inicial
-if destino == 'Bolivia' or 'Paraguay' or provincia == 'Montevideo':
-    inicial = (precio * 0.20) + precio
+if destino == 'Argentina':
+    inicial = precio
+elif destino == 'Bolivia' or destino == 'Paraguay':
+    inicial = (precio * 0.20) + precio 
+elif destino == 'Uruguay':
+    if provincia == 'Montevideo':
+        inicial = (precio * 0.20) + precio
+    else:
+        inicial = (precio * 0.25) + precio
 elif destino == 'Chile':
     inicial = (precio * 0.25) + precio
 elif destino == 'Brasil':
@@ -114,8 +121,10 @@ else:
 # Calcular el precio final
 if pago == 1:
     final = inicial - (inicial * 0.1)
-else:
+elif pago == 2:
     final = inicial
+else:
+    final = 'Tipo de pago no admitido'
 
 print("País de destino del envío:", destino)
 print("Provincia destino:", provincia)
