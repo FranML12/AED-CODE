@@ -1,7 +1,5 @@
 import subprocess
-import sys
 import os
-import io
 
 # Directorio donde se almacenan los programas entregados por los estudiantes
 SOURCES = "TP_01"
