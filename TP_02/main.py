@@ -2,6 +2,16 @@ data = open('envios.txt', 'rt') # Abro el archivo como lector en modo texto
 data_line = data.readline() # Primera linea de txt
 sig = True
 
+def control(): 
+    r1 = False
+    if 'HC' in data_line:
+        r1 = 'Hard Control'
+    if 'SC' in data_line:
+        r1 = 'Soft Control'
+    return r1 
+
+control = control()
+
 def main():
     def read():
         global cp, direccion, tipo, pago
@@ -14,7 +24,7 @@ def main():
             Sobre pago: Se puede hacer con -1 pero evitamos posibles errores de 
             espacios o caracteres extra en el txt
             """
-            cp = data_line[0:9]
+            cp = data_line[:9]
             direccion = data_line[9:29]
             tipo = int(data_line[29])
             pago = int(data_line[30])
@@ -31,18 +41,29 @@ def main():
                 resultado += i
         return resultado
     
-    global cp, direccion
+    def es_letra(c):
+        return 'A' <= c <= 'Z' or 'a' <= c <= 'z'
+
+    def es_digito(c):
+        return '0' <= c <= '9'
+    
+    global direccion, cp
     cp, direccion = borrar_espacios(cp), borrar_espacios(direccion)
 
+    # Direccion no soporta tildes. Solo mayuscula, minuscula, numeros enteros y puntos
     def info():
+        def direccion():
+            global direccion
+            print(direccion)
+            for i in direccion:
+                if not es_letra(i) and not es_digito(i) and i != '.':
+                    direccion = 'Dirección de envío inválida'
+            return direccion
+                    
+        direccion = direccion()
         # Determinar el destino en base al formato del cp
         def formato_cp(cp):
-            def es_letra(c):
-                return 'A' <= c <= 'Z' or 'a' <= c <= 'z'
-
-            def es_digito(c):
-                return '0' <= c <= '9'
-
+            # Aca utilizamos comprehensions para ahorrar el esquema del for
             if len(cp) == 8 and es_letra(cp[0]) and all(es_digito(c) for c in cp[1:5]) and all(es_letra(c) for c in cp[5:]):
                 return 'Argentina'
             elif len(cp) == 4 and all(es_digito(c) for c in cp):
@@ -120,14 +141,16 @@ def main():
         print("País de destino del envío:", destino)
         print("Importe inicial a pagar:", int(inicial))
         print("Importe final a pagar:", int(final)) 
+        print("Direccion: ", direccion)
     info()
 
 while sig:
     main()
 
-""" 
+
 def results():
     print(' (r1) - Tipo de control de direcciones:', control)
+"""
     print(' (r2) - Cantidad de envios con direccion valida:', cedvalid)
     print(' (r3) - Cantidad de envios con direccion no valida:', cedinvalid)
     print(' (r4) - Total acumulado de importes finales:', imp_acu_total)
@@ -142,3 +165,4 @@ def results():
     print('(r13) - Porcentaje de envios al exterior sobre el total:', porc)
     print('(r14) - Importe final promedio de los envios a Buenos Aires:', prom) 
 """
+results()
