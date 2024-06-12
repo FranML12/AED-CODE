@@ -1,6 +1,12 @@
 data = open('envios.txt', 'rt') # Abro el archivo como lector en modo texto
 data_line = data.readline() # Primera linea de txt
 sig = True
+imp_acu_total = 0 
+cedinvalid, cedvalid = 0, 0
+ccs, cce, ccc = 0, 0, 0
+primer_cp = None
+pcp = 0
+cant_primer_cp = 0
 
 def control(): 
     r1 = False
@@ -47,20 +53,35 @@ def main():
     def es_digito(c):
         return '0' <= c <= '9'
     
-    global direccion, cp
+    global direccion, cp, pcp
     cp, direccion = borrar_espacios(cp), borrar_espacios(direccion)
+    
+    if pcp == 0:
+        global primer_cp
+        primer_cp = cp
+        pcp += 1
+    
+    if primer_cp == cp:
+        global cant_primer_cp
+        cant_primer_cp += 1
 
     # Direccion no soporta tildes. Solo mayuscula, minuscula, numeros enteros y puntos
     def info():
         def direccion():
             global direccion
-            print(direccion)
             for i in direccion:
                 if not es_letra(i) and not es_digito(i) and i != '.':
-                    direccion = 'Dirección de envío inválida'
+                    direccion = False
             return direccion
-                    
+        
         direccion = direccion()
+        
+        global cedvalid, cedinvalid
+        if direccion:
+            cedvalid += 1
+        else:
+            cedinvalid += 1
+            
         # Determinar el destino en base al formato del cp
         def formato_cp(cp):
             # Aca utilizamos comprehensions para ahorrar el esquema del for
@@ -82,6 +103,14 @@ def main():
 
         # Determinar el precio inicial
         def tipo_precio(tipo):
+            global ccc, cce, ccs
+            if tipo == 0 or tipo == 1 or tipo == 2:
+                ccs += 1
+            elif tipo == 3 or tipo == 4:
+                ccc += 1
+            else:
+                cce += 1   
+            
             if tipo == 0:
                 precio = 1100
             elif tipo == 1:
@@ -136,30 +165,43 @@ def main():
             else:
                 final = 'Tipo de pago no admitido'
             return final
+        
         final = precio_final()
-
+        global imp_acu_total
+        imp_acu_total += final
+        
+        """ 
         print("País de destino del envío:", destino)
         print("Importe inicial a pagar:", int(inicial))
         print("Importe final a pagar:", int(final)) 
-        print("Direccion: ", direccion)
+        print("Direccion: ", direccion) 
+        """
     info()
 
 while sig:
     main()
+    
+tipo_mayor = max(ccc,ccs,cce)
 
+if tipo_mayor == ccc:
+    tipo_mayor = 'ccc'
+elif tipo_mayor == ccs:
+    tipo_mayor = 'ccs'
+else:
+    tipo_mayor = 'cce'
 
 def results():
     print(' (r1) - Tipo de control de direcciones:', control)
-"""
     print(' (r2) - Cantidad de envios con direccion valida:', cedvalid)
     print(' (r3) - Cantidad de envios con direccion no valida:', cedinvalid)
-    print(' (r4) - Total acumulado de importes finales:', imp_acu_total)
+    print(' (r4) - Total acumulado de importes finales:', int(imp_acu_total))
     print(' (r5) - Cantidad de cartas simples:', ccs)
     print(' (r6) - Cantidad de cartas certificadas:', ccc)
     print(' (r7) - Cantidad de cartas expresas:', cce)
     print(' (r8) - Tipo de carta con mayor cantidad de envios:', tipo_mayor)
     print(' (r9) - Codigo postal del primer envio del archivo:', primer_cp)
     print('(r10) - Cantidad de veces que entro ese primero:', cant_primer_cp)
+"""
     print('(r11) - Importe menor pagado por envios a Brasil:', menimp)
     print('(r12) - Codigo postal del envio a Brasil con importe menor:', mencp)
     print('(r13) - Porcentaje de envios al exterior sobre el total:', porc)
