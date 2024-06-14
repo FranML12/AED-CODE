@@ -1,5 +1,6 @@
 data = open('envios.txt', 'rt') # Abro el archivo como lector en modo texto
 data_line = data.readline() # Primera linea de txt
+
 sig = True
 imp_acu_total = 0 
 cedinvalid, cedvalid = 0, 0
@@ -7,6 +8,11 @@ ccs, cce, ccc = 0, 0, 0
 primer_cp = None
 pcp = 0
 cant_primer_cp = 0
+menimp, antmenimp = 0, 0
+mencp = 0
+count_env_exterior = 0
+prom = 0
+acc_arg_ba, count_arg_ba = 0, 0
 
 def control(): 
     r1 = False
@@ -170,6 +176,27 @@ def main():
         global imp_acu_total
         imp_acu_total += final
         
+        #  Importe menor pagado por envios a Brasil
+        if destino == 'Brasil':
+            global menimp, antmenimp, mencp
+            if antmenimp == 0:
+                antmenimp += final + 1
+            if antmenimp > final:
+                mencp = cp
+                menimp = final
+                antmenimp = menimp
+        
+        if destino != 'Argentina':
+            global count_env_exterior
+            count_env_exterior += 1
+        
+        if destino == 'Argentina':
+            if cp[0] == 'B' or cp[0] == 'C':
+                global acc_arg_ba, count_arg_ba
+                print(final)
+                acc_arg_ba += final
+                count_arg_ba += 1
+        
         """ 
         print("País de destino del envío:", destino)
         print("Importe inicial a pagar:", int(inicial))
@@ -190,6 +217,17 @@ elif tipo_mayor == ccs:
 else:
     tipo_mayor = 'cce'
 
+count_total_envios = cedvalid + cedinvalid
+if count_total_envios >= 1:
+    porc = (count_env_exterior * 100) // count_total_envios
+else: 
+    porc = None
+
+if count_arg_ba >= 1:
+    prom = acc_arg_ba // count_arg_ba
+else:
+    prom = None
+
 def results():
     print(' (r1) - Tipo de control de direcciones:', control)
     print(' (r2) - Cantidad de envios con direccion valida:', cedvalid)
@@ -201,10 +239,9 @@ def results():
     print(' (r8) - Tipo de carta con mayor cantidad de envios:', tipo_mayor)
     print(' (r9) - Codigo postal del primer envio del archivo:', primer_cp)
     print('(r10) - Cantidad de veces que entro ese primero:', cant_primer_cp)
-"""
-    print('(r11) - Importe menor pagado por envios a Brasil:', menimp)
+    print('(r11) - Importe menor pagado por envios a Brasil:', int(menimp))
     print('(r12) - Codigo postal del envio a Brasil con importe menor:', mencp)
-    print('(r13) - Porcentaje de envios al exterior sobre el total:', porc)
+    print('(r13) - Porcentaje de envios al exterior sobre el total:', porc, '%')
     print('(r14) - Importe final promedio de los envios a Buenos Aires:', prom) 
-"""
+
 results()
