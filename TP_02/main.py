@@ -8,7 +8,7 @@ ccs, cce, ccc = 0, 0, 0
 primer_cp = None
 pcp = 0
 cant_primer_cp = 0
-menimp, antmenimp = 0, 0
+menimp, antmenimp = 0, None
 mencp = 0
 count_env_exterior = 0
 prom = 0
@@ -55,6 +55,9 @@ def main():
     
     def es_letra(c):
         return 'A' <= c <= 'Z' or 'a' <= c <= 'z'
+    
+    def es_mayus(c):
+        return 'A' <= c <= 'Z'
 
     def es_digito(c):
         return '0' <= c <= '9'
@@ -73,20 +76,26 @@ def main():
 
     # Direccion no soporta tildes. Solo mayuscula, minuscula, numeros enteros y puntos
     def info():
-        def direccion():
+        global direccion, control
+        def direccion_hc():
             global direccion
+            anterior = ''
             for i in direccion:
                 if not es_letra(i) and not es_digito(i) and i != '.':
-                    direccion = False
+                    direccion = 'Dirección invalida'
+                if es_mayus(i) and es_mayus(anterior):
+                    direccion = 'Dirección invalida'
+                anterior = i
             return direccion
-        
-        direccion = direccion()
+
+        if control == 'Hard Control':
+            direccion = direccion_hc()
         
         global cedvalid, cedinvalid
-        if direccion:
-            cedvalid += 1
-        else:
+        if direccion == 'Dirección invalida':
             cedinvalid += 1
+        else:
+            cedvalid += 1
             
         # Determinar el destino en base al formato del cp
         def formato_cp(cp):
@@ -133,7 +142,6 @@ def main():
                 precio = 17900
             else:
                 precio = 0
-                print("Tipo de envío inválido.")
             return precio
         precio = tipo_precio(tipo)
 
@@ -179,13 +187,11 @@ def main():
         #  Importe menor pagado por envios a Brasil
         if destino == 'Brasil':
             global menimp, antmenimp, mencp
-            if antmenimp == 0:
-                antmenimp += final + 1
-            if antmenimp > final:
+            if antmenimp == None or antmenimp > final:
                 mencp = cp
                 menimp = final
                 antmenimp = menimp
-        
+                
         if destino != 'Argentina':
             global count_env_exterior
             count_env_exterior += 1
@@ -193,16 +199,9 @@ def main():
         if destino == 'Argentina':
             if cp[0] == 'B' or cp[0] == 'C':
                 global acc_arg_ba, count_arg_ba
-                print(final)
                 acc_arg_ba += final
                 count_arg_ba += 1
-        
-        """ 
-        print("País de destino del envío:", destino)
-        print("Importe inicial a pagar:", int(inicial))
-        print("Importe final a pagar:", int(final)) 
-        print("Direccion: ", direccion) 
-        """
+
     info()
 
 while sig:
@@ -241,7 +240,7 @@ def results():
     print('(r10) - Cantidad de veces que entro ese primero:', cant_primer_cp)
     print('(r11) - Importe menor pagado por envios a Brasil:', int(menimp))
     print('(r12) - Codigo postal del envio a Brasil con importe menor:', mencp)
-    print('(r13) - Porcentaje de envios al exterior sobre el total:', porc, '%')
+    print('(r13) - Porcentaje de envios al exterior sobre el total:', porc)
     print('(r14) - Importe final promedio de los envios a Buenos Aires:', prom) 
 
 results()
