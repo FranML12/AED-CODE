@@ -1,3 +1,15 @@
+class Envio:
+    def __init__(self, cp: str, destino: str, tipo: int, pago: int):
+        self.codigo_postal = cp
+        self.destino = destino
+        self.tipo_envio = tipo
+        self.forma_pago = pago
+#inicializo la clase de envios y agregro los objetos respectivos y les asigno las variables de los futuros atributos
+    def __str__(self) -> str:
+        return f"{self.codigo_postal}, {self.destino}, {self.tipo_envio}, {self.forma_pago}"
+#escribo el __str__ para cuando se quiera printear o coso 
+
+
 # Archivo de funciones a importar a main
 def es_letra(c):
     return 'A' <= c <= 'Z' or 'a' <= c <= 'z'
@@ -15,13 +27,6 @@ def borrar_espacios(rango):
     resultado = ''
     for i in rango:
         if i != ' ':
-            resultado += i
-    return resultado
-
-def borrar_puntos(rango):
-    resultado = ''
-    for i in rango:
-        if i != '.':
             resultado += i
     return resultado
 
@@ -127,79 +132,45 @@ def check_dir(direccion):
     # ... por lo tanto, habria que salir con True a menos que no hubiese una palabra con todos digitos...
     return td
 
-""" def valida_para_hc(destino):
-    for i in range(len(destino)):
-        car = destino[i]
-        mayuscula_antes = False
-        hay_dos_may_consecutivas = False 
-        benditas_palabras = ""
-        palabras_y_digitos_pa = False
 
-        if not (('a'<= car <= 'z') or ('A'<= car <= 'Z') or ('0'<= car <= '9') or car == ' '):
-            return False
-        if ('A'<= car <= 'Z'):
-            if mayuscula_antes:
-                hay_dos_may_consecutivas = True
-                break
-            mayuscula_antes = True
-        else: 
-            mayuscula_antes = False
-        if car != ' ':
-            benditas_palabras += car
-        else: 
-            if len(benditas_palabras) > 0 and es_letra(benditas_palabras):
-                palabras_y_digitos_pa = True
-        benditas_palabras = ""
-    if len(benditas_palabras) > 0 and es_letra(benditas_palabras):
-        palabras_y_digitos_pa = True
-    if palabras_y_digitos_pa and not hay_dos_may_consecutivas:
-        return True
-    else:
-        return False """
+def HC(registro):
+    el_papu = []
+    for l in range(len(registro)):
+        destino = registro[l].destino
+        menem = True
+        for j in destino:
+            if not (es_letra(j) or es_digito(j)):
+                menem = False
+            if es_mayus(j) and es_mayus(destino[destino.index(j)-1]):
+                menem = False
+        if menem:
+            el_papu.append(registro[l])
+    return el_papu
 
-def valida_para_hc(envios):
-    # Esta lista almacenará los envíos con direcciones válidas
-    envios_validos = []
+def control(data_line):
+    if 'HC' in data_line:
+        return 'Hard Control'
+    elif 'SC' in data_line:
+        return 'Soft Control'
+    return 'Tipo de control desconocido'
 
-    # Recorrer cada envío
-    for envio in envios:
-        destino = envio.destino
-        mayuscula_antes = False
-        hay_dos_may_consecutivas = False
-        tiene_palabra_numerica = False
-        palabra_actual = []
-        print(destino)
+def borrar_puntos(rango):
+    resultado = ''
+    for i in rango:
+        if i != '.':
+            resultado += i
+    return resultado
+
+def ordenamiento_cp(registro):
+    n = len(registro)
+    # Ordenamiento 
+    for i in range(n - 1):
+        ordenado = True
+        for j in range(n - i - 1):
+            if registro[j].codigo_postal > registro[j + 1].codigo_postal:
+                # Intercambia los objetos si el código postal es mayor
+                registro[j], registro[j + 1] = registro[j + 1], registro[j]
+                ordenado = False
+        if ordenado:
+            break  # Si ya está ordenado, termina el ciclo
         
-        for car in destino:
-            if car.isalpha() or car.isdigit() or car == ' ':
-                # Verificar si hay dos mayúsculas consecutivas
-                if car.isupper():
-                    if mayuscula_antes:
-                        hay_dos_may_consecutivas = True
-                        break
-                    mayuscula_antes = True
-                else:
-                    mayuscula_antes = False
-                
-                # Acumular caracteres de la palabra actual
-                if car != ' ':
-                    palabra_actual.append(car)
-                else:
-                    # Verificar si la palabra actual es numérica
-                    if len(palabra_actual) > 0 and all(c.isdigit() for c in palabra_actual):
-                        tiene_palabra_numerica = True
-                    palabra_actual = []
-            else:
-                # Si hay un carácter no válido, el envío no pasa la validación
-                hay_dos_may_consecutivas = True
-                break
-
-        # Verificar la última palabra acumulada
-        if len(palabra_actual) > 0 and all(c.isdigit() for c in palabra_actual):
-            tiene_palabra_numerica = True
-
-        # Validar si cumple todas las condiciones
-        if not hay_dos_may_consecutivas and tiene_palabra_numerica:
-            envios_validos.append(envio)
-
-    return envios_validos
